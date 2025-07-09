@@ -1,0 +1,47 @@
+﻿@model IEnumerable<BulletinBoard.DataAccess.Models.Announcement>
+
+@{
+    ViewData["Title"] = "All Announcements";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">+ New Announcement</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>SubCategory</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ann in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@ann.Id">@ann.Title</a>
+                </td>
+                <td>@ann.CreatedDate.ToString("g")</td>
+                <td>@(ann.Status ? "Active" : "Inactive")</td>
+                <td>@ann.Category</td>
+                <td>@ann.SubCategory</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@ann.Id" class="btn btn-sm btn-secondary">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@ann.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this announcement?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
