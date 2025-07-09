@@ -12,9 +12,33 @@ public class AnnouncementsController : Controller
     public AnnouncementsController(IAnnouncementService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string category, string subCategory)
     {
-        var items = await _service.GetAll();
+        var items = (await _service.GetAll()).ToList();
+
+        var subs = new Dictionary<string, string[]>
+        {
+            ["Household appliances"] = new[] { "Refrigerators", "Washing machines", "Boilers", "Ovens", "Hoods", "Microwaves" },
+            ["Computer technology"] = new[] { "PC", "Laptops", "Monitors", "Printers", "Scanners" },
+            ["Smartphones"] = new[] { "Android smartphones", "iOS/Apple smartphones" },
+            ["Other"] = new[] { "Clothing", "Footwear", "Accessories", "Sports equipment", "Toys" }
+        };
+
+        var categories = subs.Keys.ToList();
+
+        ViewBag.CategoryList = new SelectList(categories, category);
+        ViewBag.SubCategoryList = category != null && subs.ContainsKey(category)
+            ? new SelectList(subs[category], subCategory)
+            : new SelectList(Enumerable.Empty<string>());
+
+        if (!string.IsNullOrEmpty(category))
+            items = items.Where(a => a.Category == category).ToList();
+        if (!string.IsNullOrEmpty(subCategory))
+            items = items.Where(a => a.SubCategory == subCategory).ToList();
+
+        ViewBag.SelectedCategory = category;
+        ViewBag.SelectedSubCategory = subCategory;
+
         return View(items);
     }
 
